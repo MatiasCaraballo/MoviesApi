@@ -1,12 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 
+using EFCore.CheckConstraints;
+
 namespace MoviesApp.Data
 {
     public class CinemaDbContext : DbContext
     {
         public CinemaDbContext(DbContextOptions<CinemaDbContext> options) : base(options)
         {
-            
+
         }
 
         public DbSet<Movie> Movies { get; set; }
@@ -14,31 +16,39 @@ namespace MoviesApp.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+
             modelBuilder.Entity<Movie>(entity =>
             {
                 entity.HasKey(m => m.MovieId);
 
                 entity.Property(m => m.Name)
                     .IsRequired()
-                    .HasMaxLength(255); 
+                    .HasMaxLength(255);
 
                 entity.Property(m => m.Genre)
                     .IsRequired()
                     .HasMaxLength(50)
-                    .HasDefaultValue(string.Empty); 
+                    .HasDefaultValue(string.Empty);
 
                 entity.Property(m => m.ReleaseDate)
-                    .IsRequired(false); 
+                    .IsRequired(false);
 
                 entity.Property(m => m.Classification)
-                    .IsRequired(false); 
+                    .IsRequired(false);
 
                 entity.Property(m => m.CreatedAt)
-                    .IsRequired(false); 
+                    .IsRequired(false);
+
+                entity.Property(m => m.ImdbRating)
+                    .HasColumnType("decimal(2, 2)")
+                    .IsRequired(false);
 
                 entity.HasMany(m => m.Directors)
                     .WithMany(d => d.Movies)
                     .UsingEntity(j => j.ToTable("MovieDirectors"));
+
+                entity.ToTable(t => t.HasCheckConstraint("CK_Movie_ImdbRating", "ImdbRating >= 1.0 AND ImdbRating <= 10.0"));
             });
 
             modelBuilder.Entity<Director>(entity =>

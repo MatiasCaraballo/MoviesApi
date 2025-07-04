@@ -6,6 +6,8 @@ public class MovieDTO
     public string Genre { get; set; } = string.Empty;
     public DateTime? ReleaseDate { get; set; }
     public string? Classification { get; set; }
+    public decimal? ImdbRating { get; set; }
+
 
     public MovieDTO() { }
 
@@ -16,5 +18,6 @@ public class MovieDTO
         Genre = movie.Genre;
         ReleaseDate = movie.ReleaseDate;
         Classification = movie.Classification;
+        ImdbRating = movie.ImdbRating;
     }
 }

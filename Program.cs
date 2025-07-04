@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesApp.Data;
-using NSwag.Generation.AspNetCore;   // <-- para AddOpenApiDocument()
+using Movie;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +9,8 @@ builder.Services.AddDbContext<CinemaDbContext>(options =>
 );
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddOpenApiDocument(config =>
 {
@@ -22,16 +24,84 @@ builder.Services.AddControllers();
 
 var app = builder.Build();
 
+//Runs Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 
     app.UseOpenApi();
 
-    app.UseSwaggerUi();
+    app.UseSwaggerUi(config =>
+    {
+        config.DocumentTitle = "MovieAPI";
+        config.Path = "/swagger";
+        config.DocumentPath = "/swagger/{documentName}/swagger.json";
+        config.DocExpansion = "list";
+    }
+    );
 }
 
+//Routes
+RouteGroupBuilder movieRoute = app.MapGroup("/movies");
 
+movieRoute.MapGet("/", GetAllMovies).WithName("GetAllMovies")
+         .WithTags("Movies")
+         .WithDescription("get movies list")
+         .Produces<MovieDTO>(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound);
 
-app.MapControllers();
+movieRoute.MapGet("/{id}", GetMovie).WithName("GetMovie")
+         .WithName("GetMovie").WithTags("Movies")
+         .WithDescription("Gets a Movie By Id")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound) 
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+movieRoute.MapPost("/", PostMovie)
+         .WithName("Post Movie")
+         .WithTags("Movies")
+         .WithDescription("Crea una pelicula")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound)
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
 app.Run();
+
+            //Methods
+
+//Index Movies
+static async Task<IResult> GetAllMovies(CinemaDbContext db)
+{
+    return TypedResults.Ok(await db.Movies.Select(x => new MovieDTO(x)).ToArrayAsync());
+}
+
+//Show movie by Id
+static async Task<IResult> GetMovie(int id, CinemaDbContext db)
+{
+    return await db.Movies.FindAsync(id)
+        is Movie movie
+            ? TypedResults.Ok(new MovieDTO(movie))
+            : TypedResults.NotFound();
+}
+
+//Creates an movie
+static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
+{
+    var moviePost = new Movie
+    {
+        MovieId = movieDTO.Id,
+        Name = movieDTO.Name,
+        Genre = movieDTO.Genre,
+        Classification = movieDTO.Classification,
+        ImdbRating = movieDTO.ImdbRating,
+        CreatedAt = DateTime.Now
+
+    };
+
+    db.Movies.Add(moviePost);
+    await db.SaveChangesAsync();
+
+    postedMovieDTO = new MovieDTO(moviePost);
+
+    return TypedResults.Created($"/todoitems/{moviePost.Id}", movieDTO);
+}
