@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "4EUXAmRszRpn6lmxeNEOGNrexdACYIZUf0VwryJlHrk=",
+  "Source": "MoviesApp",
+  "BasePath": "_content/MoviesApp",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}
