@@ -1,8 +1,14 @@
 using Microsoft.EntityFrameworkCore;
 using MoviesApp.Data;
-using Movie;
+
+using System.Globalization;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 builder.Services.AddDbContext<CinemaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
@@ -60,7 +66,7 @@ movieRoute.MapGet("/{id}", GetMovie).WithName("GetMovie")
 movieRoute.MapPost("/", PostMovie)
          .WithName("Post Movie")
          .WithTags("Movies")
-         .WithDescription("Crea una pelicula")
+         .WithDescription("Creates the movie")
          .Produces(StatusCodes.Status200OK)
          .Produces(StatusCodes.Status404NotFound)
          .ProducesProblem(StatusCodes.Status500InternalServerError);
@@ -87,21 +93,19 @@ static async Task<IResult> GetMovie(int id, CinemaDbContext db)
 //Creates an movie
 static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
 {
-    var moviePost = new Movie
+    Console.WriteLine(CultureInfo.CurrentCulture.Name); 
+    var movie = new Movie
     {
-        MovieId = movieDTO.Id,
-        Name = movieDTO.Name,
-        Genre = movieDTO.Genre,
+        Name           = movieDTO.Name,
+        ReleaseDate    = movieDTO.ReleaseDate,
         Classification = movieDTO.Classification,
-        ImdbRating = movieDTO.ImdbRating,
-        CreatedAt = DateTime.Now
-
+        ImdbRating     = movieDTO.ImdbRating,
+        CreatedAt      = DateTime.Now
     };
 
-    db.Movies.Add(moviePost);
+    db.Movies.Add(movie);
     await db.SaveChangesAsync();
 
-    postedMovieDTO = new MovieDTO(moviePost);
-
-    return TypedResults.Created($"/todoitems/{moviePost.Id}", movieDTO);
+    //postedMovieDTO = new MovieDTO(moviePost);
+    return TypedResults.Created($"/todoitems/{movieDTO}");  //movieDTO);*/
 }

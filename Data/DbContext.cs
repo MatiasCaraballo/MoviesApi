@@ -23,25 +23,26 @@ namespace MoviesApp.Data
                 entity.HasKey(m => m.MovieId);
 
                 entity.Property(m => m.Name)
-                    .IsRequired()
+                    .IsRequired(true)
                     .HasMaxLength(255);
 
+                /*Genre most be in a many to many relationship
                 entity.Property(m => m.Genre)
                     .IsRequired()
                     .HasMaxLength(50)
                     .HasDefaultValue(string.Empty);
-
+                */
                 entity.Property(m => m.ReleaseDate)
                     .IsRequired(false);
 
                 entity.Property(m => m.Classification)
-                    .IsRequired(false);
+                    .IsRequired(true);
 
                 entity.Property(m => m.CreatedAt)
                     .IsRequired(false);
 
                 entity.Property(m => m.ImdbRating)
-                    .HasColumnType("decimal(2, 2)")
+                    .HasColumnType("decimal(4, 2)")
                     .IsRequired(false);
 
                 entity.HasMany(m => m.Directors)
