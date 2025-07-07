@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 
 using EFCore.CheckConstraints;
+using MoviesApp.Models;
 
 namespace MoviesApp.Data
 {
@@ -12,6 +13,9 @@ namespace MoviesApp.Data
         }
 
         public DbSet<Movie> Movies { get; set; }
+        public DbSet<Director> Directors { get; set; }
+
+        public DbSet<MovieDirector> MovieDirectors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,12 +30,6 @@ namespace MoviesApp.Data
                     .IsRequired(true)
                     .HasMaxLength(255);
 
-                /*Genre most be in a many to many relationship
-                entity.Property(m => m.Genre)
-                    .IsRequired()
-                    .HasMaxLength(50)
-                    .HasDefaultValue(string.Empty);
-                */
                 entity.Property(m => m.ReleaseDate)
                     .IsRequired(false);
 
@@ -74,6 +72,29 @@ namespace MoviesApp.Data
                 entity.Property(d => d.CreatedAt)
                     .IsRequired(false);
             });
+
+            modelBuilder.Entity<MovieDirector>(entity =>
+            {
+                entity.ToTable("MovieDirectors");
+
+                // Clave primaria compuesta
+                entity.HasKey(md => new { md.DirectorsDirectorId, md.MoviesMovieId });
+
+                // Foreign Key hacia Movie
+                entity.HasOne(md => md.Movie)
+                      .WithMany(m => m.MovieDirectors)
+                      .HasForeignKey(md => md.MoviesMovieId)
+                      .OnDelete(DeleteBehavior.Cascade);
+
+                // Foreign Key hacia Director
+                entity.HasOne(md => md.Director)
+                      .WithMany(d => d.MovieDirectors)
+                      .HasForeignKey(md => md.DirectorsDirectorId)
+                      .OnDelete(DeleteBehavior.Cascade);
+            });
         }
+        }
+        
+        
     }
 }

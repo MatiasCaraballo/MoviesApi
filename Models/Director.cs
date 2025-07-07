@@ -25,15 +25,13 @@ public class Director
     //Many relationship
     public ICollection<Movie> Movies { get; set; } = new List<Movie>();
 
-    public Director(int directorId, string name, string surname, string country)
+    public Director() { }
+    public Director(string name, string surname, string country, DateTime birthDate)
     {
-        this.DirectorId = directorId;
         this.Name = name;
         this.Surname = surname;
         this.Country = country;
+        this.BirthDate = birthDate;
     }
-
-
-
 
 }

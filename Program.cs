@@ -71,6 +71,70 @@ movieRoute.MapPost("/", PostMovie)
          .Produces(StatusCodes.Status404NotFound)
          .ProducesProblem(StatusCodes.Status500InternalServerError);
 
+
+movieRoute.MapPut("/{id}", UpdateMovie)
+         .WithName("UpdateMovie")
+         .WithTags("Movies")
+         .WithDescription("Updates a movie")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound)
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+movieRoute.MapDelete("/{id}", DeleteMovie)
+         .WithName("Delete Movie")
+         .WithTags("Movies")
+         .WithDescription("Deletes an Movie")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound)
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+RouteGroupBuilder directorRoute = app.MapGroup("/directors");
+
+directorRoute.MapGet("/",GetAllDirectors).WithName("GetAllDirectors")
+         .WithTags("Directors")
+         .WithDescription("get directors list")
+         .Produces<DirectorDTO>(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound);
+
+directorRoute.MapGet("/{id}", GetDirector).WithName("GetDirector")
+         .WithName("GetDirector").WithTags("Directors")
+         .WithDescription("Gets a Director By Id")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound) 
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+directorRoute.MapPost("/", PostDirector)
+         .WithName("Post Director")
+         .WithTags("Directors")
+         .WithDescription("Creates the director")
+         .Produces(StatusCodes.Status200OK)
+         .Produces(StatusCodes.Status404NotFound)
+         .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+RouteGroupBuilder moviesDirectorsRoute = app.MapGroup("/movie-directors");
+
+// Post an MoviesDirectors relationship
+moviesDirectorsRoute.MapPost("/",PostMovieDirector)
+        .WithName("Post MovieDirector")
+        .WithTags("MoviesDirectors")
+        .WithDescription("Post MovieDirector Relationship")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status500InternalServerError);
+
+//Get all director by Movie
+/*moviesDirectorsRoute.MapGet("/movie{movieId}-directors", GetAllDirectorsByMovie).WithName("GetAllMovieDirectors")
+        .WithTags("MoviesDirectors")
+        .WithDescription("Get all director by an movieId")
+        .WithDescription("Creates the director")
+        .Produces(StatusCodes.Status200OK)
+        .Produces(StatusCodes.Status404NotFound)
+        .ProducesProblem(StatusCodes.Status500InternalServerError);
+*/
+
+
+
+
 app.Run();
 
             //Methods
@@ -93,7 +157,6 @@ static async Task<IResult> GetMovie(int id, CinemaDbContext db)
 //Creates an movie
 static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
 {
-    Console.WriteLine(CultureInfo.CurrentCulture.Name); 
     var movie = new Movie
     {
         Name           = movieDTO.Name,
@@ -106,6 +169,82 @@ static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
     db.Movies.Add(movie);
     await db.SaveChangesAsync();
 
-    //postedMovieDTO = new MovieDTO(moviePost);
-    return TypedResults.Created($"/todoitems/{movieDTO}");  //movieDTO);*/
+    return TypedResults.Created($"/movies/{movieDTO}");  //movieDTO);*/
 }
+
+static async Task<IResult> UpdateMovie(int id, MovieDTO movieDTO, CinemaDbContext db)
+{
+    var movie = await db.Movies.FindAsync(id);
+
+    if (movie is null) return TypedResults.NotFound();
+
+    movie.Name = movieDTO.Name;
+    movie.Classification = movieDTO.Classification;
+    movie.ReleaseDate = movieDTO.ReleaseDate;
+    movie.ImdbRating = movieDTO.ImdbRating;
+    
+    await db.SaveChangesAsync();
+    return TypedResults.NoContent();
+}
+
+//Deletes the movie
+static async Task<IResult> DeleteMovie(int id, CinemaDbContext db)
+{
+    if (await db.Movies.FindAsync(id) is Movie movie)
+    {
+        db.Movies.Remove(movie);
+        await db.SaveChangesAsync();
+        return TypedResults.NoContent();
+    }
+    return TypedResults.NotFound();
+}
+
+///Index Directors
+static async Task<IResult> GetAllDirectors(CinemaDbContext db)
+{
+    return TypedResults.Ok(await db.Directors.Select(x => new DirectorDTO(x)).ToArrayAsync());
+}
+
+//Show movie by Id
+static async Task<IResult> GetDirector(int id, CinemaDbContext db)
+{
+    return await db.Directors.FindAsync(id)
+        is Director director
+            ? TypedResults.Ok(new DirectorDTO(director))
+            : TypedResults.NotFound();
+}
+
+//Creates an director
+static async Task<IResult> PostDirector(DirectorDTO directorDTO, CinemaDbContext db)
+{
+    var director = new Director
+    {
+        Name = directorDTO.Name,
+        Surname = directorDTO.Surname,
+        Country = directorDTO.Country,
+        BirthDate = directorDTO.BirthDate,
+        CreatedAt = DateTime.Now,
+    };
+
+    db.Directors.Add(director);
+    await db.SaveChangesAsync();
+
+    return TypedResults.Created($"/directors/{directorDTO}");
+}
+
+//Get all directors by movie 
+//static async Task<IResult> GetAllDirectorsByMovie
+
+static async Task <IResult> PostMovieDirector(int movieId,int directorId,CinemaDbContext db)
+{
+    await GetMovie(movieId, db);
+
+    await GetDirector(directorId, db);
+    
+    var moviesDirectors = db.Set<Dictionary<string, object>>("MovieDirectors");
+    
+
+            
+
+}
+   

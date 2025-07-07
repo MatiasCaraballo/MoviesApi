@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 public class DirectorDTO
 {
-    public int Id { get; set; }
+    public int DirectorId { get; set; }
     
     [Required]
     public string Name { get; set; } = string.Empty;
@@ -20,7 +20,7 @@ public class DirectorDTO
 
     public DirectorDTO(Director director)
     {
-        Id = director.DirectorId;
+        DirectorId = director.DirectorId;
         Name = director.Name;
         Surname = director.Surname;
         Country = director.Country;
