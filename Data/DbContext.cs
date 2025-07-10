@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 
-using EFCore.CheckConstraints;
-using MoviesApp.Models;
 
 namespace MoviesApp.Data
 {
@@ -15,13 +13,13 @@ namespace MoviesApp.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Director> Directors { get; set; }
 
-        public DbSet<MovieDirector> MovieDirectors { get; set; }
+        //public DbSet<MovieDirector> MovieDirectors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-
+            //Movie entity
             modelBuilder.Entity<Movie>(entity =>
             {
                 entity.HasKey(m => m.MovieId);
@@ -50,6 +48,7 @@ namespace MoviesApp.Data
                 entity.ToTable(t => t.HasCheckConstraint("CK_Movie_ImdbRating", "ImdbRating >= 1.0 AND ImdbRating <= 10.0"));
             });
 
+            //Director entity
             modelBuilder.Entity<Director>(entity =>
             {
                 entity.HasKey(d => d.DirectorId);
@@ -73,28 +72,33 @@ namespace MoviesApp.Data
                     .IsRequired(false);
             });
 
-            modelBuilder.Entity<MovieDirector>(entity =>
-            {
-                entity.ToTable("MovieDirectors");
-
-                // Clave primaria compuesta
-                entity.HasKey(md => new { md.DirectorsDirectorId, md.MoviesMovieId });
-
-                // Foreign Key hacia Movie
-                entity.HasOne(md => md.Movie)
-                      .WithMany(m => m.MovieDirectors)
-                      .HasForeignKey(md => md.MoviesMovieId)
-                      .OnDelete(DeleteBehavior.Cascade);
-
-                // Foreign Key hacia Director
-                entity.HasOne(md => md.Director)
-                      .WithMany(d => d.MovieDirectors)
-                      .HasForeignKey(md => md.DirectorsDirectorId)
-                      .OnDelete(DeleteBehavior.Cascade);
-            });
+            //Many to many relationships
+            modelBuilder.Entity<Movie>()
+                .HasMany(m => m.Directors)
+                .WithMany(d => d.Movies)
+                .UsingEntity<Dictionary<string, object>>(
+                    "MovieDirectors",
+                    j => j
+                        .HasOne<Director>()
+                        .WithMany()
+                        .HasForeignKey("DirectorId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j => j
+                        .HasOne<Movie>()
+                        .WithMany()
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    j =>
+                    {
+                        j.HasKey("DirectorId", "MovieId");
+                        j.ToTable("MovieDirectors");
+                    }
+                );
         }
-        }
-        
-        
+
+            
     }
 }
+        
+        
+

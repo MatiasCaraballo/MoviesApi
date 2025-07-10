@@ -1,12 +1,16 @@
 
+using System.ComponentModel.DataAnnotations;
+
 public class Movie
 {
     public int MovieId { get; set; }
 
+    [Required]
     public string Name { get; set; }
 
     public DateTime? ReleaseDate { get; set; }
 
+    [Required]
     public string Classification { get; set; }
 
 

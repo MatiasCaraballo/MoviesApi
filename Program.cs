@@ -237,14 +237,28 @@ static async Task<IResult> PostDirector(DirectorDTO directorDTO, CinemaDbContext
 
 static async Task <IResult> PostMovieDirector(int movieId,int directorId,CinemaDbContext db)
 {
-    await GetMovie(movieId, db);
+    var movie = await GetMovie(movieId, db);
 
-    await GetDirector(directorId, db);
+    if (movie == null)
+        return Results.NotFound($"Movie {movieId} not found.");
+
+    var director = await GetDirector(directorId, db);
+
+     if (director == null)
+        return Results.NotFound($"Director {directorId} not found.");
+
+
+    // 4. Agregar el director a la colección de la película
+    movie.Directors.Add(director);
+
+    // 5. Guardar los cambios (EF insertará automáticamente el registro en MovieDirectors)
+    await db.SaveChangesAsync();
+
+    // 6. Devolver resultado
+    return Results.Created($"/movie/{movieId}/director/{directorId}", null);
     
-    var moviesDirectors = db.Set<Dictionary<string, object>>("MovieDirectors");
+    return TypedResults.Created($"/movie/{movieId}/director/{directorId}");
+
     
-
-            
-
 }
    

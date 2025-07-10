@@ -15,6 +15,7 @@ public class Director
     [Required]
     public string Country { get; set; } = string.Empty;
 
+    [Required]
     public DateTime? BirthDate { get; set; }
 
 
