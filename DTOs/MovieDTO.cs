@@ -4,6 +4,8 @@ public class MovieDTO
     public string? Name { get; set; }
     public DateTime? ReleaseDate { get; set; }
     public string? Classification { get; set; }
+    public string Synopsis { get; set; }
+
     public decimal? ImdbRating { get; set; }
 
     public MovieDTO() { }
@@ -14,6 +16,7 @@ public class MovieDTO
         Name = movie.Name;
         ReleaseDate = movie.ReleaseDate;
         Classification = movie.Classification;
+        Synopsis = movie.Synopsis;
         ImdbRating = movie.ImdbRating;
     }
 
@@ -25,6 +28,7 @@ public class MovieDTO
             Name,
             ReleaseDate,
             Classification,
+            Synopsis,
             ImdbRating
         };
     }

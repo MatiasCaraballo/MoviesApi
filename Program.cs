@@ -123,14 +123,14 @@ moviesDirectorsRoute.MapPost("/",PostMovieDirector)
         .ProducesProblem(StatusCodes.Status500InternalServerError);
 
 //Get all director by Movie
-/*moviesDirectorsRoute.MapGet("/movie{movieId}-directors", GetAllDirectorsByMovie).WithName("GetAllMovieDirectors")
+moviesDirectorsRoute.MapGet("/movie{movieId}-directors", GetDirectorsByMovie).WithName("GetDirectorsByMovie")
         .WithTags("MoviesDirectors")
         .WithDescription("Get all director by an movieId")
         .WithDescription("Creates the director")
         .Produces(StatusCodes.Status200OK)
         .Produces(StatusCodes.Status404NotFound)
         .ProducesProblem(StatusCodes.Status500InternalServerError);
-*/
+
 
 
 
@@ -232,32 +232,49 @@ static async Task<IResult> PostDirector(DirectorDTO directorDTO, CinemaDbContext
     return TypedResults.Created($"/directors/{directorDTO}");
 }
 
-//Get all directors by movie 
-//static async Task<IResult> GetAllDirectorsByMovie
+static async Task<IResult> GetDirectorsByMovie(int movieId,CinemaDbContext db)
+{
+    var movie = await db.Movies
+                    .Include(m => m.Directors)
+                    .FirstOrDefaultAsync(m => m.MovieId == movieId);
+
+    var result = await db.Movies.SelectMany(
+                        m => m.Directors,
+                        (m, d) => new
+                        {
+                            MovieId = m.MovieId,
+                            Movie = m.Name,
+                            DirectorId = d.DirectorId,
+                            Director = d.Name
+
+                        }
+                ).ToListAsync();           
+    return TypedResults.Ok(result);            
+
+}
 
 static async Task <IResult> PostMovieDirector(int movieId,int directorId,CinemaDbContext db)
 {
-    var movie = await GetMovie(movieId, db);
+    var movie = await db.Movies
+                     .Include(m => m.Directors)
+                     .FirstOrDefaultAsync(m => m.MovieId == movieId);
 
     if (movie == null)
         return Results.NotFound($"Movie {movieId} not found.");
 
-    var director = await GetDirector(directorId, db);
+    var director = await db.Directors.FindAsync(directorId);
 
-     if (director == null)
+    if (director == null)
         return Results.NotFound($"Director {directorId} not found.");
 
+    if (movie.Directors.Any(d => d.DirectorId == directorId))
+        return Results.Conflict("The director its asigned to the movie.");
 
-    // 4. Agregar el director a la colección de la película
     movie.Directors.Add(director);
 
-    // 5. Guardar los cambios (EF insertará automáticamente el registro en MovieDirectors)
     await db.SaveChangesAsync();
 
-    // 6. Devolver resultado
     return Results.Created($"/movie/{movieId}/director/{directorId}", null);
-    
-    return TypedResults.Created($"/movie/{movieId}/director/{directorId}");
 
     
 }

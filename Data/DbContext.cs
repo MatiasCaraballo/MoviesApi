@@ -13,8 +13,6 @@ namespace MoviesApp.Data
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Director> Directors { get; set; }
 
-        //public DbSet<MovieDirector> MovieDirectors { get; set; }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,6 +30,9 @@ namespace MoviesApp.Data
                     .IsRequired(false);
 
                 entity.Property(m => m.Classification)
+                    .IsRequired(true);
+
+                entity.Property(m => m.Synopsis)
                     .IsRequired(true);
 
                 entity.Property(m => m.CreatedAt)

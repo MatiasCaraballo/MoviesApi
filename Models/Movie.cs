@@ -13,6 +13,8 @@ public class Movie
     [Required]
     public string Classification { get; set; }
 
+    [Required]
+    public string Synopsis { get; set; }
 
     public decimal? ImdbRating { get; set; }
 
@@ -22,11 +24,12 @@ public class Movie
     public ICollection<Director> Directors { get; set; } = new List<Director>();
 
     public Movie() { }
-    public Movie(string name, DateTime? releaseDate, string classification, decimal? imdbRating, DateTime? createdAt)
+    public Movie(string name, DateTime? releaseDate, string classification,string synopsis, decimal? imdbRating, DateTime? createdAt)
     {
         this.Name = name;
         this.ReleaseDate = releaseDate;
         this.Classification = classification;
+        this.Synopsis = synopsis;
         this.ImdbRating = imdbRating;
         this.CreatedAt = createdAt;
     }
