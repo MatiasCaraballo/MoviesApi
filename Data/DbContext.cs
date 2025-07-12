@@ -8,7 +8,7 @@ namespace MoviesApp.Data
         public CinemaDbContext(DbContextOptions<CinemaDbContext> options) : base(options)
         {
 
-        }
+        }   
 
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Director> Directors { get; set; }

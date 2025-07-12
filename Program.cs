@@ -28,6 +28,8 @@ builder.Services.AddOpenApiDocument(config =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 var app = builder.Build();
 
 //Runs Swagger
