@@ -1,11 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OpenApi;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+
 
 
 [Route("api/[controller]")]
@@ -23,7 +18,7 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-     [Tags("Authentication")]
+    [Tags("Authentication")]
     public async Task<IActionResult> Register([FromBody] RegisterDto model)
     {
         var result = await _authService.RegisterAsync(model);
@@ -39,7 +34,7 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-     [Tags("Authentication")]
+    [Tags("Authentication")]
     public async Task<IActionResult> Login([FromBody] LoginDto model)
     {
         var result = await _authService.LoginAsync(model);

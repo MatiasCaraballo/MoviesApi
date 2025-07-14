@@ -1,1 +1,8 @@
-public interface IMovie
+public interface IMovieService
+{
+    public interface IMovieService
+    {
+        Task<IEnumerable<MovieDTO>> GetAllMovies();
+        
+    }
+}
