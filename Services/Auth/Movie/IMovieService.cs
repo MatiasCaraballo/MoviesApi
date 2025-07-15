@@ -1,8 +1,5 @@
 public interface IMovieService
 {
-    public interface IMovieService
-    {
-        Task<IEnumerable<MovieDTO>> GetAllMovies();
+    Task<IEnumerable<MovieDTO>> GetAllMovies();
         
-    }
 }

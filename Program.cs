@@ -42,15 +42,17 @@ builder.Services.AddOpenApiDocument(config =>
     
 });
 
+//Controllers
 builder.Services.AddControllers();
 
+//Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddScoped<IMovieService, MovieService>();
+
 
 //Token Jwtoken
 var jwtKey = builder.Configuration["Jwt:Key"];
-
-
-
 
 if (string.IsNullOrEmpty(jwtKey))
 {
@@ -99,7 +101,7 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 //Routes
 RouteGroupBuilder movieRoute = app.MapGroup("/movies");
-
+/*
 movieRoute.MapGet("/", GetAllMovies).WithName("GetAllMovies")
          .WithTags("Movies")
          .WithDescription("get movies list")
@@ -137,7 +139,7 @@ movieRoute.MapDelete("/{id}", DeleteMovie)
          .Produces(StatusCodes.Status200OK)
          .Produces(StatusCodes.Status404NotFound)
          .ProducesProblem(StatusCodes.Status500InternalServerError);
-
+*/
 RouteGroupBuilder directorRoute = app.MapGroup("/directors");
 
 directorRoute.MapGet("/",GetAllDirectors).WithName("GetAllDirectors")
@@ -190,7 +192,7 @@ app.Run();
             //Methods
 
 //Index Movies
-static async Task<IResult> GetAllMovies(CinemaDbContext db)
+/*static async Task<IResult> GetAllMovies(CinemaDbContext db)
 {
     return TypedResults.Ok(await db.Movies.Select(x => new MovieDTO(x)).ToArrayAsync());
 }
@@ -220,8 +222,8 @@ static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
     await db.SaveChangesAsync();
 
     return TypedResults.Created($"/movies/{movieDTO}");  //movieDTO);*/
-}
-
+//}
+/*
 static async Task<IResult> UpdateMovie(int id, MovieDTO movieDTO, CinemaDbContext db)
 {
     var movie = await db.Movies.FindAsync(id);
@@ -249,6 +251,7 @@ static async Task<IResult> DeleteMovie(int id, CinemaDbContext db)
     return TypedResults.NotFound();
 }
 
+*/
 ///Index Directors
 static async Task<IResult> GetAllDirectors(CinemaDbContext db)
 {

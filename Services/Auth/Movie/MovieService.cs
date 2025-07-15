@@ -1,6 +1,6 @@
 using MoviesApp.Data;
 using Microsoft.EntityFrameworkCore;
-public class movieService : IMovieService
+public class MovieService : IMovieService
 {
     private readonly CinemaDbContext _context;
 

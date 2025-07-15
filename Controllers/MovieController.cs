@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-[Route("api/[controller]")]
+[Route("api/v1/movies")]
 [ApiController]
 
 public class MovieController : ControllerBase
