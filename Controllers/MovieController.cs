@@ -10,7 +10,7 @@ public class MovieController : ControllerBase
     public MovieController(IMovieService movieService)
     {
         _movieService = movieService;
-        
+
     }
 
     [HttpGet("Movies")]
@@ -19,10 +19,33 @@ public class MovieController : ControllerBase
     [Tags("Movies")]
 
     public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllMovies()
+    {
+        try
         {
             var movies = await _movieService.GetAllMovies();
             return Ok(movies);
         }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+
+        }
+    }
+
+    public async Task<ActionResult<MovieDTO>> GetMovie()
+    {
+        try
+        {
+            var movie = await _movieService.GetMovie();
+            return Ok(movie);
+        }
+         catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+
+        }
+        
+    }
 
 
 }
