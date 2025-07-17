@@ -21,10 +21,16 @@ public class AuthService : IAuthService
     /// <returns>Response if the succes or error response</returns>
     public async Task<(bool Succeeded, string[] Errors)> RegisterAsync(RegisterDto userModel)
     {
+        /*Validates that the user email and name is unique*/
         var userExists = await _userManager.FindByEmailAsync(userModel.Email);
         if (userExists != null)
             return (false, new[] { "That email address is already in use." });
 
+        var userNameExists = await _userManager.FindByNameAsync(userModel.UserName);
+        if (userNameExists != null)
+            return (false, new[] { "That name is already in use." });
+
+        /*Create the user*/
         var user = new AppUser
         {
             UserName = userModel.UserName,
@@ -37,6 +43,7 @@ public class AuthService : IAuthService
 
     public async Task<(bool Success, string Token, DateTime? Expiration, string Error)> LoginAsync(LoginDto model)
     {
+        /* Checks if the user Email and Password exists */
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             return (Success: false, Token: null, Expiration: null, Error: "Invalid email or password.");
