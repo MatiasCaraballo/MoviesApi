@@ -32,19 +32,20 @@ public class MovieController : ControllerBase
         }
     }
 
-    public async Task<ActionResult<MovieDTO>> GetMovie()
+    public async Task<ActionResult<MovieDTO>> GetMovie(int id)
     {
-        try
-        {
-            var movie = await _movieService.GetMovie();
+        try{
+            var movie = await _movieService.GetMovie(id);
+
+            if (movie == null)
+                return NotFound();
+
             return Ok(movie);
         }
-         catch (Exception)
-        {
+        catch (Exception){
             return StatusCode(500, "Internal Server error");
-
         }
-        
+            
     }
 
 

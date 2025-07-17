@@ -39,7 +39,7 @@ public class AuthService : IAuthService
     {
         var user = await _userManager.FindByEmailAsync(model.Email);
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-            return (Success:false, Token: null, Expiration: null, Error: "Invalid email or password.");
+            return (Success: false, Token: null, Expiration: null, Error: "Invalid email or password.");
 
         var authClaims = new List<Claim>
 
@@ -60,6 +60,12 @@ public class AuthService : IAuthService
         );
 
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
-        return (true, tokenStr, token.ValidTo, null);
+        return (
+            Success: true,
+            Token: tokenStr,
+            Expiration: token.ValidTo,
+            Error: null
+        );
+
     }
 }
