@@ -7,11 +7,20 @@ using System.Text;
 public class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
+
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
-    public AuthService(UserManager<AppUser> userManager, IConfiguration configuration)
+    
+
+    public AuthService(
+        UserManager<AppUser> userManager,
+        RoleManager<IdentityRole> roleManager,
+        IConfiguration configuration
+        )
     {
         _userManager = userManager;
+        _roleManager = roleManager;
         _configuration = configuration;
     }
     /// <summary>
@@ -21,6 +30,13 @@ public class AuthService : IAuthService
     /// <returns>Response if the succes or error response</returns>
     public async Task<(bool Succeeded, string[] Errors)> RegisterAsync(RegisterDto userModel)
     {
+        //the admin email, you can put your admin email in appsettings.json
+        // "AdminSettings": {
+        //"Email": "youremail@example.com"
+        //}
+        var adminEmail = _configuration["AdminSettings:Email"];
+
+
         /*Validates that the user email and name is unique*/
         var userExists = await _userManager.FindByEmailAsync(userModel.Email);
         if (userExists != null)
@@ -36,6 +52,23 @@ public class AuthService : IAuthService
             UserName = userModel.UserName,
             Email = userModel.Email
         };
+
+    
+        if (user.Email == adminEmail)
+        {
+            var roleExists = await _roleManager.RoleExistsAsync("Admin");
+            if (!roleExists)
+            {
+                var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
+                if (!roleResult.Succeeded)
+                    return (false, roleResult.Errors.Select(e => e.Description).ToArray());
+            }
+
+            await _userManager.AddToRoleAsync(user, "Admin");
+        }
+
+        
+        
 
         var result = await _userManager.CreateAsync(user, userModel.Password);
         return (result.Succeeded, result.Errors.Select(e => e.Description).ToArray());
@@ -65,6 +98,7 @@ public class AuthService : IAuthService
             claims: authClaims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
+
 
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
         return (
