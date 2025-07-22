@@ -24,6 +24,7 @@ public class MovieController : ControllerBase
         {
             var movies = await _movieService.GetAllMovies();
             return Ok(movies);
+
         }
         catch (Exception)
         {

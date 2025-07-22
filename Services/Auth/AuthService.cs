@@ -1,27 +1,29 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using MoviesApp.Helpers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+
 
 public class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
 
-    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
 
-    
+    private readonly AuthHelper _authHelper;
 
     public AuthService(
         UserManager<AppUser> userManager,
         RoleManager<IdentityRole> roleManager,
-        IConfiguration configuration
+        IConfiguration configuration,
+        AuthHelper authHelper
         )
     {
         _userManager = userManager;
-        _roleManager = roleManager;
         _configuration = configuration;
+        _authHelper = authHelper;
     }
     /// <summary>
     /// Register a new User
@@ -43,8 +45,7 @@ public class AuthService : IAuthService
             return (false, new[] { "That email address is already in use." });
 
         var userNameExists = await _userManager.FindByNameAsync(userModel.UserName);
-        if (userNameExists != null)
-            return (false, new[] { "That name is already in use." });
+        if (userNameExists != null)return (false, new[] { "That name is already in use." });
 
         /*Create the user*/
         var user = new AppUser
@@ -53,22 +54,9 @@ public class AuthService : IAuthService
             Email = userModel.Email
         };
 
-    
-        if (user.Email == adminEmail)
-        {
-            var roleExists = await _roleManager.RoleExistsAsync("Admin");
-            if (!roleExists)
-            {
-                var roleResult = await _roleManager.CreateAsync(new IdentityRole("Admin"));
-                if (!roleResult.Succeeded)
-                    return (false, roleResult.Errors.Select(e => e.Description).ToArray());
-            }
-
-            await _userManager.AddToRoleAsync(user, "Admin");
-        }
-
-        
-        
+        //Creates the user
+        if (user.Email == adminEmail){var createRole = await _authHelper.createRole("admin", user);}
+        else{ var createRole = await _authHelper.createRole("currentUser", user); }
 
         var result = await _userManager.CreateAsync(user, userModel.Password);
         return (result.Succeeded, result.Errors.Select(e => e.Description).ToArray());
@@ -99,7 +87,9 @@ public class AuthService : IAuthService
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
 
+        var roles = await _userManager.GetRolesAsync(user);
 
+        Console.WriteLine(roles);
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
         return (
             Success: true,

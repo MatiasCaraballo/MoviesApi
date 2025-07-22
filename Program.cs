@@ -6,12 +6,15 @@ using MoviesApp.Data;
 using System.Globalization;
 using System.Text;
 using System.Security.Claims;
+using MoviesApp.Helpers;
 
+
+//Use appSettings
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();  //importante to use the jwToken
+    .AddEnvironmentVariables();  //important to use the jwToken
 
 //Globalization
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -49,6 +52,10 @@ builder.Services.AddOpenApiDocument(config =>
 
 //Controllers
 builder.Services.AddControllers();
+
+//Helpers
+
+builder.Services.AddScoped<AuthHelper>();   
 
 //Services
 builder.Services.AddScoped<IAuthService, AuthService>();
