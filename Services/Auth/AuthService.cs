@@ -87,9 +87,6 @@ public class AuthService : IAuthService
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
 
-        var roles = await _userManager.GetRolesAsync(user);
-
-        Console.WriteLine(roles);
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
         return (
             Success: true,

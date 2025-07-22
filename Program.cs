@@ -7,6 +7,7 @@ using System.Globalization;
 using System.Text;
 using System.Security.Claims;
 using MoviesApp.Helpers;
+using FluentValidation;
 
 
 //Use appSettings
@@ -37,7 +38,7 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 
-
+//builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -61,6 +62,8 @@ builder.Services.AddScoped<AuthHelper>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddScoped<IMovieService, MovieService>();
+
+builder.Services.AddHttpContextAccessor();
 
 
 //Token Jwtoken
@@ -115,45 +118,6 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 //Routes
 RouteGroupBuilder movieRoute = app.MapGroup("/movies");
-/*
-movieRoute.MapGet("/", GetAllMovies).WithName("GetAllMovies")
-         .WithTags("Movies")
-         .WithDescription("get movies list")
-         .Produces<MovieDTO>(StatusCodes.Status200OK)
-         .Produces(StatusCodes.Status404NotFound);
-
-movieRoute.MapGet("/{id}", GetMovie).WithName("GetMovie")
-         .WithName("GetMovie").WithTags("Movies")
-         .WithDescription("Gets a Movie By Id")
-         .Produces(StatusCodes.Status200OK)
-         .Produces(StatusCodes.Status404NotFound) 
-         .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-movieRoute.MapPost("/", PostMovie)
-         .WithName("Post Movie")
-         .WithTags("Movies")
-         .WithDescription("Creates the movie")
-         .Produces(StatusCodes.Status200OK)
-         .Produces(StatusCodes.Status404NotFound)
-         .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-
-movieRoute.MapPut("/{id}", UpdateMovie)
-         .WithName("UpdateMovie")
-         .WithTags("Movies")
-         .WithDescription("Updates a movie")
-         .Produces(StatusCodes.Status200OK)
-         .Produces(StatusCodes.Status404NotFound)
-         .ProducesProblem(StatusCodes.Status500InternalServerError);
-
-movieRoute.MapDelete("/{id}", DeleteMovie)
-         .WithName("Delete Movie")
-         .WithTags("Movies")
-         .WithDescription("Deletes an Movie")
-         .Produces(StatusCodes.Status200OK)
-         .Produces(StatusCodes.Status404NotFound)
-         .ProducesProblem(StatusCodes.Status500InternalServerError);
-*/
 RouteGroupBuilder directorRoute = app.MapGroup("/directors");
 
 directorRoute.MapGet("/",GetAllDirectors).WithName("GetAllDirectors")
