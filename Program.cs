@@ -93,10 +93,23 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
         RoleClaimType = ClaimTypes.Role // Roles
     };
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            return Task.CompletedTask;
+        }
+    };
 });
 
 
 var app = builder.Build();
+
+
 
 //Runs Swagger
 if (app.Environment.IsDevelopment())
@@ -105,14 +118,16 @@ if (app.Environment.IsDevelopment())
 
     app.UseOpenApi();
 
-    app.UseSwaggerUi(config =>
-    {
+    app.UseSwaggerUi(config =>{
         config.DocumentTitle = "MovieAPI";
         config.Path = "/swagger";
         config.DocumentPath = "/swagger/{documentName}/swagger.json";
         config.DocExpansion = "list";
     }
     );
+
+    app.UseAuthentication(); 
+    app.UseAuthorization();
 }
 
 app.MapControllers();

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("api/v1/movies")]
 [ApiController]
@@ -57,7 +58,11 @@ public class MovieController : ControllerBase
 
     }
 
-
+    [HttpPost("Movies")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Tags("Movies")]
+    [Authorize]
     public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
     {
         try
