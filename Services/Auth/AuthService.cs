@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
-using MoviesApp.Helpers;
 using System.IdentityModel.Tokens.Jwt;
+using System.Runtime.InteropServices.Swift;
 using System.Security.Claims;
 using System.Text;
 
@@ -11,22 +12,16 @@ public class AuthService : IAuthService
     private readonly UserManager<AppUser> _userManager;
 
     private readonly IConfiguration _configuration;
-
-    private readonly AuthHelper _authHelper;
-
     private readonly IAccountService _iAccountService;
 
     public AuthService(
         UserManager<AppUser> userManager,
-        RoleManager<IdentityRole> roleManager,
         IConfiguration configuration,
-        AuthHelper authHelper,
         IAccountService iAccountService
         )
     {
         _userManager = userManager;
         _configuration = configuration;
-        _authHelper = authHelper;
         _iAccountService = iAccountService;
     }
     /// <summary>
@@ -55,7 +50,7 @@ public class AuthService : IAuthService
         var createUser = await _userManager.CreateAsync(user, userModel.Password);
         return (createUser.Succeeded, createUser.Errors.Select(e => e.Description).ToArray());
 
-        
+
     }
 
     public async Task<(bool Success, string Token, DateTime? Expiration, string Error)> LoginAsync(LoginDto model)
@@ -65,13 +60,10 @@ public class AuthService : IAuthService
         if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
             return (Success: false, Token: null, Expiration: null, Error: "Invalid email or password.");
 
-        var authClaims = new List<Claim>
+        /*Creates the claims*/
+        var createClaims = CreateClaims(user.Id, model.Email);
+        List<Claim> claims = createClaims.claims;
 
-        {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
 
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
@@ -79,7 +71,7 @@ public class AuthService : IAuthService
             issuer: _configuration["Jwt:Issuer"],
             audience: _configuration["Jwt:Audience"],
             expires: DateTime.UtcNow.AddHours(3),
-            claims: authClaims,
+            claims: claims,
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
 
@@ -91,5 +83,25 @@ public class AuthService : IAuthService
             Error: null
         );
 
+    }
+
+    public (bool Succeeded, string?[] Errors, List<Claim> claims) CreateClaims(string id,string email) {
+
+        try
+        {
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, id),
+                new Claim(ClaimTypes.Email, email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+            };
+
+            return (true, null, claims);
+        }
+        catch
+        {
+            return (false, new[] { "Error creating the claims" }, null);
+
+        }
     }
 }

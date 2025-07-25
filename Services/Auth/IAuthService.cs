@@ -1,5 +1,12 @@
+using System.Security.Claims;
+
 public interface IAuthService
 {
     Task<(bool Succeeded, string[] Errors)> RegisterAsync(RegisterDto model);
     Task<(bool Success, string? Token, DateTime? Expiration, string? Error)> LoginAsync(LoginDto model);
+
+    (bool Succeeded, string[]?Errors, List<Claim>? claims) CreateClaims(string id, string email);
+
+
+
 } 
