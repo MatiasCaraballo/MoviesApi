@@ -1,6 +1,6 @@
 public class MovieDTO
 {
-    public int? Id { get; set; }
+    public int? MovieId { get; set; }
     public string? Name { get; set; }
     public DateTime? ReleaseDate { get; set; }
     public string? Classification { get; set; }
@@ -12,7 +12,7 @@ public class MovieDTO
 
     public MovieDTO(Movie movie)
     {
-        Id = movie.MovieId;
+        MovieId = movie.MovieId;
         Name = movie.Name;
         ReleaseDate = movie.ReleaseDate;
         Classification = movie.Classification;
@@ -24,7 +24,7 @@ public class MovieDTO
     {
         return new object?[]
         {
-            Id,
+            MovieId,
             Name,
             ReleaseDate,
             Classification,
