@@ -4,7 +4,7 @@ public class MovieDTO
     public string? Name { get; set; }
     public DateTime? ReleaseDate { get; set; }
     public string? Classification { get; set; }
-    public string Synopsis { get; set; }
+    public string Synopsis { get; set; } = string.Empty;
 
     public decimal? ImdbRating { get; set; }
 

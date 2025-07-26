@@ -62,6 +62,7 @@ builder.Services.AddScoped<AuthHelper>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IClaimService, ClaimService>();
 
 builder.Services.AddHttpContextAccessor();
 

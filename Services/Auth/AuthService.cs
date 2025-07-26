@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Runtime.InteropServices.Swift;
 using System.Security.Claims;
 using System.Text;
 
@@ -14,15 +12,19 @@ public class AuthService : IAuthService
     private readonly IConfiguration _configuration;
     private readonly IAccountService _iAccountService;
 
+    private readonly IClaimService _iClaimService;
+
     public AuthService(
         UserManager<AppUser> userManager,
         IConfiguration configuration,
-        IAccountService iAccountService
+        IAccountService iAccountService,
+        IClaimService iClaimService
         )
     {
         _userManager = userManager;
         _configuration = configuration;
         _iAccountService = iAccountService;
+        _iClaimService = iClaimService;
     }
     /// <summary>
     /// Register a new User
@@ -53,18 +55,25 @@ public class AuthService : IAuthService
 
     }
 
-    public async Task<(bool Success, string Token, DateTime? Expiration, string Error)> LoginAsync(LoginDto model)
+    public async Task<(bool Success, string? Token, DateTime? Expiration, string? Error)> LoginAsync(LoginDto model)
     {
-        /* Checks if the user Email and Password exists */
-        var user = await _userManager.FindByEmailAsync(model.Email);
-        if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
-            return (Success: false, Token: null, Expiration: null, Error: "Invalid email or password.");
+
+        /* Validates the email  and password*/
+        var userExists = await _iAccountService.ValidateEmailExists(model.Email);
+        if (!userExists.Succeeded) { return (Success: false, Token: null, Expiration: null, Error: "The mail does not exists"); }
+        ;
+
+        var user = userExists.appUser;
+        if (await _userManager.CheckPasswordAsync(user, model.Password))
+            return (Success: false, Token: null, Expiration: null, Error: "Invalid password.");
 
         /*Creates the claims*/
-        var createClaims = CreateClaims(user.Id, model.Email);
+
+        var createClaims = _iClaimService.CreateClaims(user.Id, user.Email);
         List<Claim> claims = createClaims.claims;
 
-
+        /*Generates the token*/
+        
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
 
         var token = new JwtSecurityToken(
@@ -85,23 +94,5 @@ public class AuthService : IAuthService
 
     }
 
-    public (bool Succeeded, string?[] Errors, List<Claim> claims) CreateClaims(string id,string email) {
-
-        try
-        {
-            var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, id),
-                new Claim(ClaimTypes.Email, email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-            };
-
-            return (true, null, claims);
-        }
-        catch
-        {
-            return (false, new[] { "Error creating the claims" }, null);
-
-        }
-    }
+    
 }

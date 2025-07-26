@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using MoviesApp.Helpers;
+using YamlDotNet.RepresentationModel;
 
 public class AccountService : IAccountService
 {
@@ -46,27 +47,29 @@ public class AccountService : IAccountService
         }
 
     }
-
     public async Task<(bool Succeeded, string[]? Errors)> AssignRole(AppUser appUser)
     {
         try
         {
             /* To use this method asign the admin role in appsettings.json*/
-            var adminEmail = _configuration["AdminSettings:Email"]; 
+            var adminEmail = _configuration["AdminSettings:Email"];
 
             if (appUser.Email == adminEmail) { var createRole = await _authHelper.createRole("admin", appUser); }
             else { var createRole = await _authHelper.createRole("currentUser", appUser); }
 
-            return (true,null);
+            return (true, null);
         }
         catch
         {
             return (false, new[] { "Error assigning the role" });
         }
-        
 
-        
+    }
 
-
+    public async Task<(bool Succeeded, string[]? Errors,AppUser? appUser)> ValidateEmailExists(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null) { return (false, new[] { "The email does not exists" },null); }
+        return (true, null, user);
     }
 }

@@ -41,8 +41,6 @@ public class MovieService : IMovieService
 
         return TypedResults.Created($"/movies/{movieDTO}");
             
-
-        
     }
 
 }
