@@ -3,7 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 
 public class ClaimService : IClaimService
 {
-    public (bool Succeeded, string?[] Errors, List<Claim> claims) CreateClaims(string id, string email)
+    public (bool Succeeded, string?[] Errors, List<Claim>? claims) CreateClaims(string id, string email)
     {
 
         try

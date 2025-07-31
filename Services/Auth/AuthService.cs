@@ -74,7 +74,9 @@ public class AuthService : IAuthService
 
         /*Generates the token*/
         
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+        var secret = _configuration["Jwt:Secret"];
+        
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
         var token = new JwtSecurityToken(
             issuer: _configuration["Jwt:Issuer"],
@@ -84,7 +86,9 @@ public class AuthService : IAuthService
             signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
         );
 
+
         var tokenStr = new JwtSecurityTokenHandler().WriteToken(token);
+
         return (
             Success: true,
             Token: tokenStr,

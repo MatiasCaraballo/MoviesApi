@@ -40,6 +40,7 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Tags("Movies")]
+    
     public async Task<ActionResult<MovieDTO>> GetMovie(int id)
     {
         try
