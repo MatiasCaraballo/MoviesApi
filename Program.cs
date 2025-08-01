@@ -38,18 +38,10 @@ builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
     .AddDefaultTokenProviders();
 
 
-//builder.Services.AddValidatorsFromAssemblyContaining<RegisterValidator>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddOpenApiDocument(config =>
-{
-    config.DocumentName = "MovieAPI";
-    config.Title        = "Movie API v1";
-    config.Version      = "v1";
-    
-});
 
 //Controllers
 builder.Services.AddControllers();
@@ -76,6 +68,7 @@ if (string.IsNullOrEmpty(jwtKey))
     throw new InvalidOperationException("JWT Key is missing in configuration.");
 }
 
+//Adds the Authentication and Authorization policy services
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -107,28 +100,48 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+
+
+//Creates the Open Api Document
+builder.Services.AddOpenApiDocument(config =>
+{
+        config.Title = "Movies Api";
+
+        config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
+        {
+            Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
+            Name = "Authorization",
+            In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+            Description = "Include ‘Bearer’ followed by a space and your JWT token in the Authorization header"
+        });
+
+        config.OperationProcessors.Add(
+            new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
+});
+
 
 var app = builder.Build();
+app.UseAuthentication();
+app.UseAuthorization();
 
 
-
-//Runs Swagger
+//Runs Swagger interface
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
 
     app.UseOpenApi();
 
-    app.UseSwaggerUi(config =>{
+    app.UseSwaggerUi(config =>
+    {
         config.DocumentTitle = "MovieAPI";
         config.Path = "/swagger";
         config.DocumentPath = "/swagger/{documentName}/swagger.json";
         config.DocExpansion = "list";
+
     }
     );
-
-    app.UseAuthentication(); 
-    app.UseAuthorization();
 }
 
 app.MapControllers();

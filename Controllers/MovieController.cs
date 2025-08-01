@@ -40,6 +40,7 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Tags("Movies")]
+    [Authorize]
     
     public async Task<ActionResult<MovieDTO>> GetMovie(int id)
     {
@@ -63,7 +64,7 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Tags("Movies")]
-   // [Authorize]
+    [Authorize]
     public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
     {
         try
