@@ -41,9 +41,10 @@ public class AuthController : ControllerBase
 
         if (!result.Success)
         {
-            return Unauthorized();
+            return Unauthorized(result.Error);
         }
 
-        return Ok();
+        return Ok(new { token = result.Token, expiration = result.Expiration });
+
     }
 }

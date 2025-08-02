@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         ;
 
         var user = userExists.appUser;
-        if (await _userManager.CheckPasswordAsync(user, model.Password))
+        if (!await _userManager.CheckPasswordAsync(user, model.Password))
             return (Success: false, Token: null, Expiration: null, Error: "Invalid password.");
 
         /*Creates the claims*/

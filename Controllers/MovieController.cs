@@ -20,6 +20,8 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Tags("Movies")]
+    [Authorize]
+
 
     public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllMovies()
     {
@@ -64,7 +66,7 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Tags("Movies")]
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
     {
         try
