@@ -1,30 +1,28 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-[Route("api/v1/movies")]
+[Route("api/v1/directors")]
 [ApiController]
 
-public class MovieController : ControllerBase
+public class DirectorController : ControllerBase
 {
-    private readonly IMovieService _movieService;
+    private readonly IDirectorService _directorService;
 
-    public MovieController(IMovieService movieService)
+    public DirectorController(IDirectorService directorService)
     {
-        _movieService = movieService;
+        _directorService = directorService;
     }
 
-    [HttpGet("Movies")]
+    [HttpGet("Directors")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
-    [Authorize]
+    [Tags("Directors")]
 
-
-    public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllMovies()
+    public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllDirectors()
     {
         try
         {
-            var movies = await _movieService.GetAllMovies();
+            var movies = await _directorService.GetAllDirectors();
             return Ok(movies);
 
         }
@@ -35,45 +33,45 @@ public class MovieController : ControllerBase
         }
     }
 
-    [HttpGet("Movies/{id}")]
+    [HttpGet("Directors/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
-    [Authorize]
-    
-    public async Task<ActionResult<MovieDTO>> GetMovie(int id)
-    {
-        try
-        {
-            var movie = await _movieService.GetMovie(id);
-
-            if (movie == null)
-                return NotFound();
-
-            return Ok(movie);
-        }
-        catch (Exception)
-        {
-            return StatusCode(500, "Internal Server error");
-        }
-
-    }
-
-    [HttpPost("Movies")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
+    [Tags("Directors")]
     [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
+
+
+    public async Task<ActionResult<DirectorDTO>> GetDirector(int id)
     {
         try
         {
-            var movie = await _movieService.PostMovie(movieDTO);
+            var director = await _directorService.GetDirector(id);
 
-            if (movie == null)
+            if (director == null)
                 return NotFound();
 
-            return Ok(movie);
+            return Ok(director);
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+        }
+    }
+
+    [HttpPost("Directors")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Tags("Directors")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<DirectorDTO>> PostDirector(DirectorDTO directorDTO)
+    {
+        try
+        {
+            var director = await _directorService.PostDirector(directorDTO);
+
+            if (director == null)
+                return NotFound();
+
+            return Ok(director);
         }
         catch (Exception)
         {
@@ -81,7 +79,5 @@ public class MovieController : ControllerBase
         }
 
     }
-
-
 
 }

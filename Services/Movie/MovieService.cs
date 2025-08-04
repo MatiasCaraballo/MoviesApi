@@ -39,7 +39,7 @@ public class MovieService : IMovieService
         _context.Movies.Add(movie);
         await _context.SaveChangesAsync();
 
-        return TypedResults.Created($"/movies/{movieDTO}");
+        return TypedResults.Created($"/movies");
             
     }
 

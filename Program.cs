@@ -55,6 +55,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IClaimService, ClaimService>();
+builder.Services.AddScoped<IDirectorService,DirectorService>();
 
 builder.Services.AddHttpContextAccessor();
 
@@ -113,7 +114,7 @@ builder.Services.AddOpenApiDocument(config =>
             Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
             Name = "Authorization",
             In = NSwag.OpenApiSecurityApiKeyLocation.Header,
-            Description = "Include ‘Bearer’ followed by a space and your JWT token in the Authorization header"
+            Description = "Include your JWT token"
         });
 
         config.OperationProcessors.Add(
@@ -148,7 +149,11 @@ app.MapControllers();
 //Routes
 RouteGroupBuilder movieRoute = app.MapGroup("/movies");
 RouteGroupBuilder directorRoute = app.MapGroup("/directors");
+RouteGroupBuilder directorsMovieRoute = app.MapGroup("/directors-movies");
 
+app.Run();
+
+/*
 directorRoute.MapGet("/",GetAllDirectors).WithName("GetAllDirectors")
          .WithTags("Directors")
          .WithDescription("get directors list")
@@ -192,75 +197,13 @@ moviesDirectorsRoute.MapGet("/movie{movieId}-directors", GetDirectorsByMovie).Wi
 
 
 
+*/
 
-
-app.Run();
 
             //Methods
 
-//Index Movies
-/*static async Task<IResult> GetAllMovies(CinemaDbContext db)
-{
-    return TypedResults.Ok(await db.Movies.Select(x => new MovieDTO(x)).ToArrayAsync());
-}
-
-//Show movie by Id
-static async Task<IResult> GetMovie(int id, CinemaDbContext db)
-{
-    return await db.Movies.FindAsync(id)
-        is Movie movie
-            ? TypedResults.Ok(new MovieDTO(movie))
-            : TypedResults.NotFound();
-}
-
-//Creates an movie
-static async Task<IResult> PostMovie(MovieDTO movieDTO, CinemaDbContext db)
-{
-    var movie = new Movie
-    {
-        Name           = movieDTO.Name,
-        ReleaseDate    = movieDTO.ReleaseDate,
-        Classification = movieDTO.Classification,
-        ImdbRating     = movieDTO.ImdbRating,
-        CreatedAt      = DateTime.Now
-    };
-
-    db.Movies.Add(movie);
-    await db.SaveChangesAsync();
-
-    return TypedResults.Created($"/movies/{movieDTO}");  //movieDTO);*/
-//}
-/*
-static async Task<IResult> UpdateMovie(int id, MovieDTO movieDTO, CinemaDbContext db)
-{
-    var movie = await db.Movies.FindAsync(id);
-
-    if (movie is null) return TypedResults.NotFound();
-
-    movie.Name = movieDTO.Name;
-    movie.Classification = movieDTO.Classification;
-    movie.ReleaseDate = movieDTO.ReleaseDate;
-    movie.ImdbRating = movieDTO.ImdbRating;
-    
-    await db.SaveChangesAsync();
-    return TypedResults.NoContent();
-}
-
-//Deletes the movie
-static async Task<IResult> DeleteMovie(int id, CinemaDbContext db)
-{
-    if (await db.Movies.FindAsync(id) is Movie movie)
-    {
-        db.Movies.Remove(movie);
-        await db.SaveChangesAsync();
-        return TypedResults.NoContent();
-    }
-    return TypedResults.NotFound();
-}
-
-*/
 ///Index Directors
-static async Task<IResult> GetAllDirectors(CinemaDbContext db)
+/*static async Task<IResult> GetAllDirectors(CinemaDbContext db)
 {
     return TypedResults.Ok(await db.Directors.Select(x => new DirectorDTO(x)).ToArrayAsync());
 }
@@ -337,5 +280,5 @@ static async Task <IResult> PostMovieDirector(int movieId,int directorId,CinemaD
     return Results.Created($"/movie/{movieId}/director/{directorId}", null);
 
     
-}
+}*/
    
