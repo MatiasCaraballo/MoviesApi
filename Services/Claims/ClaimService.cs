@@ -1,22 +1,35 @@
 using System.Security.Claims;
-using System.IdentityModel.Tokens.Jwt;
+
 public class ClaimService : IClaimService
 {
-    public (bool Succeeded, string?[] Errors, List<Claim>? claims) CreateClaims(string id, string email)
+    
+    private readonly IUserRepository _userRepository;
+     public ClaimService(IUserRepository userRepository)
     {
+        _userRepository = userRepository;
+    }
 
+    public async Task<(bool Succeeded, string?[] Errors, List<Claim>? claims)> CreateClaims(string id, string email)
+    {
         try
         {
+
+            var getUserRole = await _userRepository.GetUserRole(id);
+            if (getUserRole == null)
+            {
+                return (false, new[] { $"There is no role for the user Id {id}"}, null);
+            }
+
             var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.NameIdentifier, id),
                     new Claim(ClaimTypes.Email, email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                    new Claim("Roles","admin"),
                 };
 
             return (true, null, claims);
-           
-            
+
+
         }
         catch
         {

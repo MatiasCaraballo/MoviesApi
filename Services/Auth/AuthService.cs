@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 
 
+
 public class AuthService : IAuthService
 {
     private readonly UserManager<AppUser> _userManager;
@@ -68,14 +69,14 @@ public class AuthService : IAuthService
             return (Success: false, Token: null, Expiration: null, Error: "Invalid password.");
 
         /*Creates the claims*/
-
-        var createClaims = _iClaimService.CreateClaims(user.Id, user.Email);
+        var createClaims =  await _iClaimService.CreateClaims(user.Id, user.Email);
+        if (!createClaims.Succeeded){ return (Success: false, Token: null, Expiration: null, Error: "Error creating the claims");}
         List<Claim> claims = createClaims.claims;
 
         /*Generates the token*/
-        
+
         var secret = _configuration["Jwt:Secret"];
-        
+
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secret));
 
         var token = new JwtSecurityToken(
@@ -98,5 +99,5 @@ public class AuthService : IAuthService
 
     }
 
-    
+
 }

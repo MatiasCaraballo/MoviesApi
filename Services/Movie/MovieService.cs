@@ -3,12 +3,10 @@ using Microsoft.EntityFrameworkCore;
 public class MovieService : IMovieService
 {
     private readonly CinemaDbContext _context;
-    private readonly IHttpContextAccessor _httpContextAccessor;
 
-    public MovieService(CinemaDbContext context, IHttpContextAccessor httpContextAccessor)
+    public MovieService(CinemaDbContext context)
     {
         _context = context;
-        _httpContextAccessor = httpContextAccessor;
     }
 
     public async Task<IEnumerable<MovieDTO>> GetAllMovies()
