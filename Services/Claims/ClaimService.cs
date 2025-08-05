@@ -11,7 +11,7 @@ public class ClaimService : IClaimService
                 {
                     new Claim(ClaimTypes.NameIdentifier, id),
                     new Claim(ClaimTypes.Email, email),
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
             return (true, null, claims);

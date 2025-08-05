@@ -69,6 +69,7 @@ if (string.IsNullOrEmpty(jwtKey))
     throw new InvalidOperationException("JWT Key is missing in configuration.");
 }
 
+
 //Adds the Authentication and Authorization policy services
 builder.Services.AddAuthentication(options =>
 {
@@ -86,7 +87,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-        RoleClaimType = ClaimTypes.Role // Roles
+        RoleClaimType = builder.Configuration["Jwt:RoleClaimType"],
     };
     options.Events = new JwtBearerEvents
     {
@@ -104,6 +105,10 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
+var issuer = builder.Configuration["Jwt:Issuer"];
+var audience = builder.Configuration["Jwt:Audience"];
+var roles = builder.Configuration["Jwt:RoleClaimType"]; // Roles
+
 //Creates the Open Api Document
 builder.Services.AddOpenApiDocument(config =>
 {
@@ -111,8 +116,8 @@ builder.Services.AddOpenApiDocument(config =>
 
         config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
         {
-            Type = NSwag.OpenApiSecuritySchemeType.ApiKey,
-            Name = "Authorization",
+            Type = NSwag.OpenApiSecuritySchemeType.Http,
+            Scheme = "bearer",
             In = NSwag.OpenApiSecurityApiKeyLocation.Header,
             Description = "Include your JWT token"
         });
