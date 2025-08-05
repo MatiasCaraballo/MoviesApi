@@ -6,10 +6,15 @@ public class UserRepository:IUserRepository
     protected readonly CinemaDbContext _context;
     public async Task<IResult> GetUserRole(string id)
     {
-        var roles = await (from r in _context.Roles
-                           join ur in _context.UserRoles on r.Id equals ur.RoleId
-                           where ur.UserId == id
-                           select r.Name).ToListAsync();
+      
+      var roles = await _context.Roles
+            .FromSqlInterpolated($@"
+                SELECT r.*
+                FROM AspNetRoles r
+                INNER JOIN AspNetUserRoles ur ON r.Id = ur.RoleId
+                WHERE ur.UserId = {id}")
+            .Select(r => r.Name)
+            .ToListAsync();
         if (roles == null)
         {
             return TypedResults.NotFound($"There is no role for the user Id {id}");
