@@ -1,21 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Identity;
 using MoviesApp.Data;
 using System.Globalization;
 using System.Text;
-using System.Security.Claims;
-using MoviesApp.Helpers;
-using FluentValidation;
 
-
-//Use appSettings
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Configuration
-    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
-    .AddEnvironmentVariables();  //important to use the jwToken
+
 
 //Globalization
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -27,17 +19,6 @@ builder.Services.AddDbContext<CinemaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-//Identity
-builder.Services.AddIdentity<AppUser, IdentityRole>(options =>
-    {
-        options.User.RequireUniqueEmail = true;
-        options.Password.RequireNonAlphanumeric = false;
-        options.Password.RequireUppercase = false;
-    })
-    .AddEntityFrameworkStores<CinemaDbContext>()
-    .AddDefaultTokenProviders();
-
-
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddEndpointsApiExplorer();
@@ -46,33 +27,26 @@ builder.Services.AddEndpointsApiExplorer();
 //Controllers
 builder.Services.AddControllers();
 
-//Helpers
-
-builder.Services.AddScoped<AuthHelper>();
-
 //Services
-builder.Services.AddScoped<IAuthService, AuthService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
+
 builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<IClaimService, ClaimService>();
 builder.Services.AddScoped<IDirectorService,DirectorService>();
 
-//Repositories 
-builder.Services.AddScoped<IUserRepository, UserRepository>();
+
 builder.Services.AddHttpContextAccessor();
 
 
-//Token Jwtoken
-var jwtKey = builder.Configuration["Jwt:Key"];
-
-if (string.IsNullOrEmpty(jwtKey))
-{
-
-    throw new InvalidOperationException("JWT Key is missing in configuration.");
-}
-
-
 //Adds the Authentication and Authorization policy services
+var jwtKey = builder.Configuration["Jwt:Key"];
+if (string.IsNullOrEmpty(jwtKey)) { throw new InvalidOperationException("No JWT:Key was specified in the configuration"); }
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"];
+if (string.IsNullOrEmpty(jwtIssuer)) { throw new InvalidOperationException("No JWT:issuer was specified in the configuration"); }
+
+var jwtAudience = builder.Configuration["Jwt:Audience"];
+if (string.IsNullOrEmpty(jwtAudience)){throw new InvalidOperationException("No JWT:audience was specified in the configuration");}
+
+
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -107,25 +81,22 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 
-var issuer = builder.Configuration["Jwt:Issuer"];
-var audience = builder.Configuration["Jwt:Audience"];
-var roles = builder.Configuration["Jwt:RoleClaimType"]; // Roles
-
 //Creates the Open Api Document
 builder.Services.AddOpenApiDocument(config =>
 {
-        config.Title = "Movies Api";
+    config.Title = "Movies Api";
 
-        config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
-        {
-            Type = NSwag.OpenApiSecuritySchemeType.Http,
-            Scheme = "bearer",
-            In = NSwag.OpenApiSecurityApiKeyLocation.Header,
-            Description = "Include your JWT token"
-        });
+    config.AddSecurity("JWT", Enumerable.Empty<string>(), new NSwag.OpenApiSecurityScheme
+    {
+        Type = NSwag.OpenApiSecuritySchemeType.Http,
+        Scheme = "bearer",
+        In = NSwag.OpenApiSecurityApiKeyLocation.Header,
+        BearerFormat = "JWT",
+        Description = "Include your JWT token"
+    });
 
-        config.OperationProcessors.Add(
-            new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
+    config.OperationProcessors.Add(
+        new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
 });
 
 
@@ -153,6 +124,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.MapControllers();
+
 //Routes
 RouteGroupBuilder movieRoute = app.MapGroup("/movies");
 RouteGroupBuilder directorRoute = app.MapGroup("/directors");

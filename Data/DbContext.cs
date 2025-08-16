@@ -1,10 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 
 namespace MoviesApp.Data
 {
-    public class CinemaDbContext : IdentityDbContext<AppUser>
+    public class CinemaDbContext : DbContext
     {
         public CinemaDbContext(DbContextOptions<CinemaDbContext> options) : base(options)
         {
@@ -96,13 +95,7 @@ namespace MoviesApp.Data
                         j.ToTable("MovieDirectors");
                     }
                 );
-            modelBuilder.Entity<AppUser>()
-                   .HasIndex(u => u.Email)
-                   .IsUnique();
-
-            modelBuilder.Entity<AppUser>()
-                   .HasIndex(u => u.NormalizedUserName)
-                   .IsUnique();
+        
         }
 
             
