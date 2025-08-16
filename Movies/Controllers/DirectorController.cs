@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-[Route("api/v1/directors")]
 [ApiController]
+[Route("[controller]")]
 
 public class DirectorController : ControllerBase
 {
@@ -13,10 +13,9 @@ public class DirectorController : ControllerBase
         _directorService = directorService;
     }
 
-    [HttpGet("Directors")]
+    [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Directors")]
 
     public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllDirectors()
     {
@@ -33,10 +32,9 @@ public class DirectorController : ControllerBase
         }
     }
 
-    [HttpGet("Directors/{id}")]
+    [HttpGet("/{DirectorId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Directors")]
     [Authorize(Roles = "Admin")]
 
 
@@ -57,10 +55,9 @@ public class DirectorController : ControllerBase
         }
     }
 
-    [HttpPost("Directors")]
+    [HttpPost()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Directors")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<DirectorDTO>> PostDirector(DirectorDTO directorDTO)
     {

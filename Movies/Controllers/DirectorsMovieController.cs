@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-[Route("api/v1/directors-movies")]
 [ApiController]
+[Route("[controller]")]
 
 public class DirectorsMovieController : ControllerBase
 {
@@ -14,10 +14,9 @@ public class DirectorsMovieController : ControllerBase
         _directorsMovieService = directorsMovieService;
     }
 
-    [HttpGet("Directors-Movie")]
+    [HttpGet("/{movieId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Directors-Movie")]
 
     public async Task<ActionResult<IEnumerable<DirectorDTO>>> GetDirectorsByMovie(int movieId)
     {

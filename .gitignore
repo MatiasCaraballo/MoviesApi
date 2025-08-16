@@ -1,6 +1,0 @@
-bin/
-Properties/launchSettings.json
-obj/
-appsettings.json
-appsettings.Development.json
-Migrations/

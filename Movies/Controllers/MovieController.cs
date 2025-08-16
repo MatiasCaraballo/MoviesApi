@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 
-[Route("api/v1/movies")]
 [ApiController]
+[Route("[controller]")]
 
 public class MovieController : ControllerBase
 {
@@ -13,10 +13,9 @@ public class MovieController : ControllerBase
         _movieService = movieService;
     }
 
-    [HttpGet("Movies")]
+    [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
     [Authorize]
 
 
@@ -35,10 +34,9 @@ public class MovieController : ControllerBase
         }
     }
 
-    [HttpGet("Movies/{id}")]
+    [HttpGet("/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
     [Authorize]
     
     public async Task<ActionResult<MovieDTO>> GetMovie(int id)
@@ -59,10 +57,9 @@ public class MovieController : ControllerBase
 
     }
 
-    [HttpPost("Movies")]
+    [HttpPost()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Tags("Movies")]
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
     {
@@ -81,7 +78,4 @@ public class MovieController : ControllerBase
         }
 
     }
-
-
-
 }
