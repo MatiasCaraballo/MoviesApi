@@ -8,6 +8,8 @@ public class MovieDTO
 
     public decimal? ImdbRating { get; set; }
 
+    public List<string> Directors { get; set; } = new List<string>();
+
     public MovieDTO() { }
 
     public MovieDTO(Movie movie)
@@ -18,6 +20,9 @@ public class MovieDTO
         Classification = movie.Classification;
         Synopsis = movie.Synopsis;
         ImdbRating = movie.ImdbRating;
+        Directors = movie.Directors
+                         .Select(d => d.Name + " " + d.Surname)
+                         .ToList();
     }
 
     public object?[] ToArray()

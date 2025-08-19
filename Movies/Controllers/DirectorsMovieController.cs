@@ -14,7 +14,7 @@ public class DirectorsMovieController : ControllerBase
         _directorsMovieService = directorsMovieService;
     }
 
-    [HttpGet("/{movieId}")]
+    [HttpGet("/Director-Movie/{movieId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
 

@@ -32,7 +32,7 @@ public class DirectorController : ControllerBase
         }
     }
 
-    [HttpGet("/{DirectorId}")]
+    [HttpGet("Director/{DirectorId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "Admin")]

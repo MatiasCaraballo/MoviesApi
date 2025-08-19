@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-
 public interface IMovieService
 {
     Task<IEnumerable<MovieDTO>> GetAllMovies();
@@ -7,6 +5,8 @@ public interface IMovieService
     Task<MovieDTO> GetMovie(int id);
 
     Task<IResult> PostMovie(MovieDTO movieDTO);
+
+    Task<IEnumerable<MovieDTO>> SearchMovies(string? search);
 
 
 }

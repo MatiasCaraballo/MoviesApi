@@ -34,11 +34,11 @@ public class MovieController : ControllerBase
         }
     }
 
-    [HttpGet("/{id}")]
+    [HttpGet("/Movie{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize]
-    
+
     public async Task<ActionResult<MovieDTO>> GetMovie(int id)
     {
         try
@@ -77,5 +77,26 @@ public class MovieController : ControllerBase
             return StatusCode(500, "Internal Server error");
         }
 
+    }
+    
+    //Agregar summary
+
+    [HttpGet("/Movie/{search}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+    public async Task<ActionResult<IEnumerable<MovieDTO>>> SearchMovies(string? search)
+    {
+        try
+        {
+            var movies = await _movieService.SearchMovies(search);
+            return Ok(movies);
+
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+
+        }
     }
 }
