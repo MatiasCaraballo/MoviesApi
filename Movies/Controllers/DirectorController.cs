@@ -17,7 +17,7 @@ public class DirectorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
-    public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllDirectors()
+    public async Task<ActionResult<IEnumerable<DirectorDTO>>> GetAllDirectors()
     {
         try
         {
@@ -75,6 +75,30 @@ public class DirectorController : ControllerBase
             return StatusCode(500, "Internal Server error");
         }
 
+    }
+
+    ///  <summary>
+    /// Search Directors by Name,Movie or Country
+    /// </summary>
+    /// <param name="search"> Movie,Director name or Country.</param>
+    [HttpGet("/Directors/{search}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    
+    /// <returns> DirectorDTO </returns>
+    public async Task<ActionResult<IEnumerable<DirectorDTO>>> SearchDirectors(string? search)
+    {
+        try
+        {
+            var directors = await _directorService.SearchDirectors(search);
+            return Ok(directors);
+
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+
+        }
     }
 
 }

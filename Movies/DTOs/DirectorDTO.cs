@@ -10,11 +10,15 @@ public class DirectorDTO
     
     [Required]
     public string Surname { get; set; } = string.Empty;
+
+    public string? Fullname { get; set; } = string.Empty;
     
     [Required]
     public string Country { get; set; } = string.Empty;
     
     public DateTime? BirthDate { get; set; }
+
+    public List<string> Movies { get; set; } = new List<string>();
 
     public DirectorDTO() { }
 

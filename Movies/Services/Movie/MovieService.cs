@@ -72,9 +72,5 @@ public class MovieService : IMovieService
         }
 
         return await query.ToListAsync();        
-
-
-       
-
     }
 }

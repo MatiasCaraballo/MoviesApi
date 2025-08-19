@@ -78,13 +78,16 @@ public class MovieController : ControllerBase
         }
 
     }
-    
-    //Agregar summary
 
+    ///  <summary>
+    /// Search movies by name/director
+    /// </summary>
+    /// <param name="search"> Movie or director name.</param>
     [HttpGet("/Movie/{search}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-
+    
+    /// <returns> MovieDTO </returns>
     public async Task<ActionResult<IEnumerable<MovieDTO>>> SearchMovies(string? search)
     {
         try
