@@ -16,7 +16,7 @@ public class DirectorDTO
     [Required]
     public string Country { get; set; } = string.Empty;
     
-    public DateTime? BirthDate { get; set; }
+    public int? BirthYear { get; set; }
 
     public List<string> Movies { get; set; } = new List<string>();
 
@@ -28,6 +28,6 @@ public class DirectorDTO
         Name = director.Name;
         Surname = director.Surname;
         Country = director.Country;
-        BirthDate = director.BirthDate;
+        BirthYear = director.BirthYear;
     }
 }

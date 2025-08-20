@@ -1,5 +1,5 @@
-using Microsoft.EntityFrameworkCore;
 
+using Microsoft.EntityFrameworkCore;
 
 namespace MoviesApp.Data
 {
@@ -8,7 +8,7 @@ namespace MoviesApp.Data
         public CinemaDbContext(DbContextOptions<CinemaDbContext> options) : base(options)
         {
 
-        }   
+        }
 
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Director> Directors { get; set; }
@@ -26,18 +26,15 @@ namespace MoviesApp.Data
                     .IsRequired(true)
                     .HasMaxLength(255);
 
-                entity.Property(m => m.ReleaseDate)
-                    .IsRequired(false);
+                entity.Property(m => m.ReleaseYear)
+                    .IsRequired(true);
 
                 entity.Property(m => m.Classification)
                     .IsRequired(true);
 
                 entity.Property(m => m.Synopsis)
                     .IsRequired(true);
-
-                entity.Property(m => m.CreatedAt)
-                    .IsRequired(false);
-
+                    
                 entity.Property(m => m.ImdbRating)
                     .HasColumnType("decimal(4, 2)")
                     .IsRequired(false);
@@ -47,6 +44,8 @@ namespace MoviesApp.Data
                     .UsingEntity(j => j.ToTable("MovieDirectors"));
 
                 entity.ToTable(t => t.HasCheckConstraint("CK_Movie_ImdbRating", "ImdbRating >= 1.0 AND ImdbRating <= 10.0"));
+
+                entity.ToTable(t => t.HasCheckConstraint("CK_Movie_ReleaseYear", "ReleaseYear >= 1895 AND ReleaseYear <= YEAR(GETDATE()) + 10"));
             });
 
             //Director entity
@@ -66,10 +65,7 @@ namespace MoviesApp.Data
                     .IsRequired()
                     .HasMaxLength(100);
 
-                entity.Property(d => d.BirthDate)
-                    .IsRequired(false);
-
-                entity.Property(d => d.CreatedAt)
+                entity.Property(d => d.BirthYear)
                     .IsRequired(false);
             });
 
@@ -95,10 +91,10 @@ namespace MoviesApp.Data
                         j.ToTable("MovieDirectors");
                     }
                 );
-        
+
         }
 
-            
+
     }
 }
         

@@ -14,6 +14,7 @@ public class DirectorController : ControllerBase
     }
 
     [HttpGet()]
+    [Authorize(Roles = "Admin,Client")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
 
@@ -35,8 +36,7 @@ public class DirectorController : ControllerBase
     [HttpGet("Director/{DirectorId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize(Roles = "Admin")]
-
+    [Authorize(Roles = "Admin,Client")]
 
     public async Task<ActionResult<DirectorDTO>> GetDirector(int id)
     {
@@ -59,6 +59,7 @@ public class DirectorController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "Admin")]
+
     public async Task<ActionResult<DirectorDTO>> PostDirector(DirectorDTO directorDTO)
     {
         try
@@ -84,6 +85,9 @@ public class DirectorController : ControllerBase
     [HttpGet("/Directors/{search}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "Admin,Client")]
+
+
     
     /// <returns> DirectorDTO </returns>
     public async Task<ActionResult<IEnumerable<DirectorDTO>>> SearchDirectors(string? search)

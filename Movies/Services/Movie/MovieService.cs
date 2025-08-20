@@ -28,10 +28,9 @@ public class MovieService : IMovieService
         var movie = new Movie
         {
             Name = movieDTO.Name,
-            ReleaseDate = movieDTO.ReleaseDate,
+            ReleaseYear = movieDTO.ReleaseYear,
             Classification = movieDTO.Classification,
             ImdbRating = movieDTO.ImdbRating,
-            CreatedAt = DateTime.Now
         };
 
         _context.Movies.Add(movie);
@@ -50,7 +49,7 @@ public class MovieService : IMovieService
         {
             MovieId = m.MovieId,
             Name = m.Name,
-            ReleaseDate = m.ReleaseDate,
+            ReleaseYear = m.ReleaseYear,
             Classification = m.Classification,
             Synopsis = m.Synopsis,
             ImdbRating = m.ImdbRating,

@@ -31,7 +31,7 @@ public class DirectorService : IDirectorService
             Name = directorDTO.Name,
             Surname = directorDTO.Surname,
             Country = directorDTO.Country,
-            BirthDate = directorDTO.BirthDate,
+            BirthYear = directorDTO.BirthYear,
         };
 
         _context.Directors.Add(director);
@@ -53,7 +53,7 @@ public class DirectorService : IDirectorService
             Surname = d.Surname,
             Fullname = d.Name + ' ' + d.Surname,
             Country = d.Country,
-            BirthDate = d.BirthDate,
+            BirthYear = d.BirthYear,
             Movies = d.Movies
                      .Select(m => m.Name)
                      .ToList()

@@ -2,7 +2,7 @@ public class MovieDTO
 {
     public int? MovieId { get; set; }
     public string? Name { get; set; }
-    public DateTime? ReleaseDate { get; set; }
+    public int ReleaseYear { get; set; }
     public string? Classification { get; set; }
     public string Synopsis { get; set; } = string.Empty;
 
@@ -16,7 +16,7 @@ public class MovieDTO
     {
         MovieId = movie.MovieId;
         Name = movie.Name;
-        ReleaseDate = movie.ReleaseDate;
+        ReleaseYear = movie.ReleaseYear;
         Classification = movie.Classification;
         Synopsis = movie.Synopsis;
         ImdbRating = movie.ImdbRating;
@@ -31,7 +31,7 @@ public class MovieDTO
         {
             MovieId,
             Name,
-            ReleaseDate,
+            ReleaseYear,
             Classification,
             Synopsis,
             ImdbRating

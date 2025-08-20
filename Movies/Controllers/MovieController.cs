@@ -16,7 +16,7 @@ public class MovieController : ControllerBase
     [HttpGet()]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize]
+    [Authorize(Roles = "Admin,Client")]
 
 
     public async Task<ActionResult<IEnumerable<MovieDTO>>> GetAllMovies()
@@ -37,7 +37,7 @@ public class MovieController : ControllerBase
     [HttpGet("/Movie{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [Authorize]
+    [Authorize(Roles = "Admin,Client")]
 
     public async Task<ActionResult<MovieDTO>> GetMovie(int id)
     {
@@ -61,6 +61,7 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "Admin")]
+
     public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
     {
         try
@@ -86,6 +87,8 @@ public class MovieController : ControllerBase
     [HttpGet("/Movie/{search}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [Authorize(Roles = "Admin,Client")]
+
     
     /// <returns> MovieDTO </returns>
     public async Task<ActionResult<IEnumerable<MovieDTO>>> SearchMovies(string? search)

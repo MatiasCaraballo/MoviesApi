@@ -8,7 +8,7 @@ public class Movie
     [Required]
     public string Name { get; set; }
 
-    public DateTime? ReleaseDate { get; set; }
+    public int ReleaseYear { get; set; }
 
     [Required]
     public string Classification { get; set; }
@@ -18,19 +18,15 @@ public class Movie
 
     public decimal? ImdbRating { get; set; }
 
-    //Secret Data
-    public DateTime? CreatedAt { get; set; }
-
     public ICollection<Director> Directors { get; set; } = new List<Director>();
 
     public Movie() { }
-    public Movie(string name, DateTime? releaseDate, string classification,string synopsis, decimal? imdbRating, DateTime? createdAt)
+    public Movie(string name, int releaseYear, string classification,string synopsis, decimal? imdbRating)
     {
         this.Name = name;
-        this.ReleaseDate = releaseDate;
+        this.ReleaseYear = releaseYear;
         this.Classification = classification;
         this.Synopsis = synopsis;
         this.ImdbRating = imdbRating;
-        this.CreatedAt = createdAt;
     }
 }

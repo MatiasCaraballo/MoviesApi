@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using MoviesApp.Data;
 using System.Globalization;
 using System.Text;
+using System.Security.Claims;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -63,7 +65,8 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-        RoleClaimType = builder.Configuration["Jwt:RoleClaimType"],
+        RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",//builder.Configuration["Jwt:RoleClaimType"],
+        NameClaimType = ClaimTypes.Name
     };
     options.Events = new JwtBearerEvents
     {
@@ -98,7 +101,6 @@ builder.Services.AddOpenApiDocument(config =>
     config.OperationProcessors.Add(
         new NSwag.Generation.Processors.Security.AspNetCoreOperationSecurityScopeProcessor("JWT"));
 });
-
 
 var app = builder.Build();
 app.UseAuthentication();

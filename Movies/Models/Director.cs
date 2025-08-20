@@ -15,24 +15,18 @@ public class Director
     [Required]
     public string Country { get; set; } = string.Empty;
 
-    [Required]
-    public DateTime? BirthDate { get; set; }
-
-
-    //Secret Data
-    public DateTime? CreatedAt { get; set; }
-
+    public int? BirthYear { get; set; }
 
     //Many relationship
     public ICollection<Movie> Movies { get; set; } = new List<Movie>();
 
     public Director() { }
-    public Director(string name, string surname, string country, DateTime birthDate)
+    public Director(string name, string surname, string country, int? birthYear)
     {
         this.Name = name;
         this.Surname = surname;
         this.Country = country;
-        this.BirthDate = birthDate;
+        this.BirthYear = birthYear;
     }
 
 }
