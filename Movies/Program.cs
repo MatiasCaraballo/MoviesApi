@@ -21,7 +21,7 @@ builder.Services.AddDbContext<CinemaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+builder.Services.AddDatabaseDeveloperPageExceptionFilter(); // revisar
 
 builder.Services.AddEndpointsApiExplorer();
 
@@ -65,7 +65,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidAudience = builder.Configuration["Jwt:Audience"],
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-        RoleClaimType = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role",//builder.Configuration["Jwt:RoleClaimType"],
+        RoleClaimType = builder.Configuration["Jwt:RoleClaimType"],
         NameClaimType = ClaimTypes.Name
     };
     options.Events = new JwtBearerEvents
