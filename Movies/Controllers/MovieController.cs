@@ -62,11 +62,11 @@ public class MovieController : ControllerBase
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "Admin")]
 
-    public async Task<ActionResult<MovieDTO>> PostMovie(MovieDTO movieDTO)
+    public async Task<ActionResult<MovieDTO>> PostMovie(PostMovieDTO postMovieDTO)
     {
         try
         {
-            var movie = await _movieService.PostMovie(movieDTO);
+            var movie = await _movieService.PostMovie(postMovieDTO);
 
             if (movie == null)
                 return NotFound();

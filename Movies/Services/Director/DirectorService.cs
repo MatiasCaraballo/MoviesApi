@@ -15,9 +15,9 @@ public class DirectorService : IDirectorService
         return await _context.Directors.Select(d => new DirectorDTO(d)).ToListAsync();
     }
 
-    public async Task<DirectorDTO> GetDirector(int id)
+    public async Task<DirectorDTO> GetDirector(int DirectorId)
     {
-        var director = await _context.Directors.FindAsync(id);
+        var director = await _context.Directors.FindAsync(DirectorId);
 
         return new DirectorDTO(director);
 
@@ -40,38 +40,42 @@ public class DirectorService : IDirectorService
         return TypedResults.Created($"/directors");
 
     }
-    
+
     public async Task<IEnumerable<DirectorDTO>> SearchDirectors(string? search)
     {
         if (string.IsNullOrWhiteSpace(search)) { return Enumerable.Empty<DirectorDTO>(); }
 
-        var query = _context.Directors
-        .SelectMany(d=> d.Movies, (d, m) => new DirectorDTO
+        var tokens = search
+        .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+        .Where(t => t.Length >= 3)
+        .Select(t => t.ToLower())
+        .ToArray();
+
+        var query = _context.Directors.AsQueryable();
+
+        foreach (var token in tokens)
+        {
+            var local = token;
+            query = query.Where(d =>
+                EF.Functions.Like(d.Name.ToLower(), $"%{local}%") ||
+                EF.Functions.Like(d.Surname.ToLower(), $"%{local}%") ||
+                d.Movies.Any(m =>
+                    EF.Functions.Like((m.Name).ToLower(), $"%{local}%")
+                )
+            );
+        }
+
+        var result = await query.Select(d => new DirectorDTO
         {
             DirectorId = d.DirectorId,
             Name = d.Name,
             Surname = d.Surname,
-            Fullname = d.Name + ' ' + d.Surname,
             Country = d.Country,
-            BirthYear = d.BirthYear,
-            Movies = d.Movies
-                     .Select(m => m.Name)
-                     .ToList()
-        });
+            BirthYear = d.BirthYear
+        }).ToListAsync();
 
-        var tokens = search.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                        .Where(t => t.Length >= 3);
-
-        foreach (var token in tokens)
-        {
-            var localToken = token; 
-            query = query.Where(p =>
-                EF.Functions.Like(p.Fullname, $"%{localToken}%") ||
-                p.Movies.Any(m => EF.Functions.Like(m, $"%{localToken}%"))||
-                EF.Functions.Like(p.Country, $"%{localToken}%") 
-            );
-        }
-        return await query.ToListAsync();        
+        return result;
+        
     }
 
 }

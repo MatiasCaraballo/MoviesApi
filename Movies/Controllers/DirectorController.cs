@@ -33,19 +33,18 @@ public class DirectorController : ControllerBase
         }
     }
 
-    [HttpGet("Director/{DirectorId}")]
+    [HttpGet("{DirectorId}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [Authorize(Roles = "Admin,Client")]
 
-    public async Task<ActionResult<DirectorDTO>> GetDirector(int id)
+    public async Task<ActionResult<DirectorDTO>> GetDirector(int DirectorId)
     {
         try
         {
-            var director = await _directorService.GetDirector(id);
+            var director = await _directorService.GetDirector(DirectorId);
 
-            if (director == null)
-                return NotFound();
+            if (director == null) {return NotFound();}
 
             return Ok(director);
         }

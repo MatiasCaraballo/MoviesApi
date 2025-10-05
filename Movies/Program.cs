@@ -21,7 +21,7 @@ builder.Services.AddDbContext<CinemaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
 
-builder.Services.AddDatabaseDeveloperPageExceptionFilter(); // revisar
+builder.Services.AddDatabaseDeveloperPageExceptionFilter(); 
 
 builder.Services.AddEndpointsApiExplorer();
 

@@ -4,7 +4,7 @@ public interface IMovieService
 
     Task<MovieDTO> GetMovie(int id);
 
-    Task<IResult> PostMovie(MovieDTO movieDTO);
+    Task<IResult> PostMovie(PostMovieDTO postMovieDTO);
 
     Task<IEnumerable<MovieDTO>> SearchMovies(string? search);
 
