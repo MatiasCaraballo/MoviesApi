@@ -33,4 +33,25 @@ public class DirectorsMovieController : ControllerBase
         }
     }
 
+    [HttpPost("/Director/Movie")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+
+    public async Task<ActionResult<IEnumerable<DirectorDTO>>> PostMovieDirector(int movieId,int directorId)
+    {
+        try
+        {
+            var directors = await _directorsMovieService.PostMovieDirector(movieId,directorId);
+            return Ok(directors);
+
+        }
+        catch (Exception)
+        {
+            return StatusCode(500, "Internal Server error");
+
+        }
+    } 
+    
+    
+
 }

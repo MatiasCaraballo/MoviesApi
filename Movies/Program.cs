@@ -32,7 +32,8 @@ builder.Services.AddControllers();
 //Services
 
 builder.Services.AddScoped<IMovieService, MovieService>();
-builder.Services.AddScoped<IDirectorService,DirectorService>();
+builder.Services.AddScoped<IDirectorService, DirectorService>();
+builder.Services.AddScoped<IDirectorsMovieService, DirectorsMovieService>();
 
 
 builder.Services.AddHttpContextAccessor();
