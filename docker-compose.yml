@@ -1,0 +1,47 @@
+
+services:
+              #Databases
+  #Auth
+  db-auth:
+      image: mcr.microsoft.com/mssql/server:2022-latest
+      container_name: db-auth
+      environment:
+        ACCEPT_EULA: "Y"
+        SA_PASSWORD: ${SA_AUTH_PASSWORD}
+      ports:
+        - "1433:1433"
+      restart: unless-stopped 
+      networks:
+        - backend
+  #Movies
+  db-movies: 
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: db-movies
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SA_MOVIES_PASSWORD}
+    ports: 
+      - "1434:1433"
+    restart: unless-stopped
+    networks:
+      - backend
+  #APIsRESTFUL
+  auth:
+    build:
+      context: ./Auth
+      dockerfile: Dockerfile
+    image: moviesapp-auth:latest
+    ports:
+      - "8081:80"
+    env_file:
+      - Auth/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db-auth;Database=AuthDB;User Id=sa;Password=${SA_AUTH_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+    depends_on:
+      - db-auth
+    networks:
+      - backend
+networks:
+  backend:
+    
