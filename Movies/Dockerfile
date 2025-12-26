@@ -22,4 +22,4 @@ ENV ASPNETCORE_URLS=http://+:80 \
 
 EXPOSE 80
 USER appuser
-ENTRYPOINT ["dotnet", "Auth.dll"]
+ENTRYPOINT ["dotnet", "MoviesApp.dll"]

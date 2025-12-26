@@ -7,7 +7,7 @@ services:
       container_name: db-auth
       environment:
         ACCEPT_EULA: "Y"
-        SA_PASSWORD: ${SA_AUTH_PASSWORD}
+        SA_PASSWORD: ${SA_PASSWORD}
       ports:
         - "1433:1433"
       restart: unless-stopped 
@@ -19,9 +19,20 @@ services:
     container_name: db-movies
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: ${SA_MOVIES_PASSWORD}
+      SA_PASSWORD: ${SA_PASSWORD}
     ports: 
       - "1434:1433"
+    restart: unless-stopped
+    networks:
+      - backend
+  db-reviews: 
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: db-reviews
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: ${SA_PASSWORD}
+    ports: 
+      - "1435:1433"
     restart: unless-stopped
     networks:
       - backend
@@ -37,9 +48,42 @@ services:
       - Auth/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Server=db-auth;Database=AuthDB;User Id=sa;Password=${SA_AUTH_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+      - ConnectionStrings__Default=Server=db-auth;Database=AuthDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
     depends_on:
       - db-auth
+    networks:
+      - backend
+
+  movies:
+    build:
+      context: ./Movies
+      dockerfile: Dockerfile
+    image: moviesapp-movies:latest
+    ports:
+      - "8082:80"
+    env_file:
+      - Movies/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db-movies;Database=MovieDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+    depends_on:
+      - db-movies
+    networks:
+      - backend
+  reviews:
+    build:
+      context: ./Reviews
+      dockerfile: Dockerfile
+    image: moviesapp-reviews:latest
+    ports:
+      - "8083:80"
+    env_file:
+      - Reviews/.env
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__Default=Server=db-reviews;Database=ReviewDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+    depends_on:
+      - db-reviews
     networks:
       - backend
 networks:
