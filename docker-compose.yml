@@ -7,7 +7,7 @@ services:
       container_name: db-auth
       environment:
         ACCEPT_EULA: "Y"
-        SA_PASSWORD: ${SA_PASSWORD}
+        SA_PASSWORD: ${SA_AUTH_PASSWORD}
       ports:
         - "1433:1433"
       restart: unless-stopped 
@@ -19,7 +19,7 @@ services:
     container_name: db-movies
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: ${SA_PASSWORD}
+      SA_PASSWORD: ${SA_MOVIES_PASSWORD}
     ports: 
       - "1434:1433"
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
     container_name: db-reviews
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: ${SA_PASSWORD}
+      SA_PASSWORD: ${SA_REVIEWS_PASSWORD}
     ports: 
       - "1435:1433"
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
       - Auth/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Server=db-auth;Database=AuthDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+      - ConnectionStrings__Default=Server=db-auth;Database=AuthDB;User Id=sa;Password=${SA_AUTH_PASSWORD};Encrypt=True;TrustServerCertificate=True;
     depends_on:
       - db-auth
     networks:
@@ -65,7 +65,7 @@ services:
       - Movies/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Server=db-movies;Database=MovieDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+      - ConnectionStrings__Default=Server=db-movies;Database=MovieDB;User Id=sa;Password=${SA_MOVIES_PASSWORD};Encrypt=True;TrustServerCertificate=True;
     depends_on:
       - db-movies
     networks:
@@ -81,7 +81,7 @@ services:
       - Reviews/.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__Default=Server=db-reviews;Database=ReviewDB;User Id=sa;Password=${SA_PASSWORD};Encrypt=True;TrustServerCertificate=True;
+      - ConnectionStrings__Default=Server=db-reviews;Database=ReviewDB;User Id=sa;Password=${SA_REVIEWS_PASSWORD};Encrypt=True;TrustServerCertificate=True;
     depends_on:
       - db-reviews
     networks:
